@@ -4,6 +4,7 @@ library(dplyr)
 library(tidyr)
 library(igraph)
 
+## read in adj matrix. zero out diag + lower tri
 readadjmat <- function(f){
  # read in data and make a matrix
  d<-read.table(f) %>% as.matrix %>% unname
@@ -12,6 +13,7 @@ readadjmat <- function(f){
  return(d)
 }
 
+# load all the data
 mkbig3d <- function() {
   ## find all reward
   allrewardlist <- Sys.glob('/Volumes/Phillips/Finn/Reward_Rest/subjs/1*/preproc/1*_power264.txt')
@@ -57,18 +59,25 @@ compWithIdx <- function(mats,idx.1,cutoff) {
   compare(c.1, c.2, method ="nmi")
 }
 
+# shuffle labels and computer nmi
 permnmi <- function(mat,n.1) {
   nall <- dim(mat)[3]
+  # shuffle all the indexes and grab the first n.1 of them
   permidx <- sample( 1:nall )[1:n.1]
+  # get nmi of this label shuffle
   perm1 <- compWithIdx(big3d,permidx,cutoff)
 }
 
-## GET ACTUALL VALUE
+######### 
+
+big3d <- mkbig3d()
 cutoff <- quantile(big3d,.9)
+
+## actual nmi value for real labels
 nreward <-dim(reward.3d)[3]
 rewardidxs<-1:nreward
 actual.nmi <- compWithIdx(big3d,rewardidxs,cutoff)
 
-#### run tests
+# run tests
 nreps=3
 dist <- sapply(1:nreps,function(x){permnmi(big3d,nreward)})
