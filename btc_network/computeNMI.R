@@ -3,6 +3,7 @@
 library(dplyr)
 library(tidyr)
 library(igraph)
+library(abind)
 
 ## read in adj matrix. zero out diag + lower tri
 readadjmat <- function(f){
@@ -38,7 +39,7 @@ mkbig3d <- function() {
   pnc.flist <- sapply(pnc.d$sub,pncpath)
   pnc.3d <- sapply(pnc.flist,FUN=readadjmat,simplify = 'array')
   
-  big3d <- abind(reard.3d,pnc.3d)
+  big3d <- abind(reward.3d,pnc.3d)
 }
 
 # given a 3d matrix get communties for the meaned graph
@@ -74,7 +75,7 @@ big3d <- mkbig3d()
 cutoff <- quantile(big3d,.9)
 
 ## actual nmi value for real labels
-nreward <-dim(reward.3d)[3]
+#nreward <-dim(reward.3d)[3]
 rewardidxs<-1:nreward
 actual.nmi <- compWithIdx(big3d,rewardidxs,cutoff)
 
